@@ -83,7 +83,7 @@ label {
 <h1>Modeling the Coronavirus</h1>
 <p>The delay may support accusations by President Donald Trump that the Chinese government’s secrecy held back the world’s response to the virus. However, even the public announcement on Jan. 20 left the U.S. nearly two months to prepare for the pandemic.
 During those months, Trump ignored the warnings of his own staff and dismissed the disease as nothing to worry about, while the government failed to bolster medical supplies and deployed flawed testing kits. Leaders across the world turned a blind eye to the outbreak, with British Prime Minister Boris Johnson calling for a strategy of “herd immunity” — before falling ill himself. Brazilian President Jair Bolsonaro sneered at what he called “a little cold.”</p>
-<p>Hover over blah blah.</p>
+<p><i>Hover over the blue bars for more details.</i></p>
 <label>Select a country:</label>
 <div class="row align-items-center justify-content-center form-inline wrapper">
   <select id="selectButton" class="form-control" onfocus='this.size=15;' onblur='this.size=1;' onchange='this.size=1; this.blur();'></select>
@@ -124,7 +124,9 @@ var legend = svg.append('g')
   .attr('class', 'legend')
   .attr('transform', 'translate(0,0)');
    
+var countries = "Afghanistan  Albania  Algeria  Angola  Argentina  Armenia  Australia  Austria  Azerbaijan  Bahamas  Bahrain  Bangladesh  Belarus  Belgium  Bolivia  Bosnia and Herzegovina  Brazil  Bulgaria  Cameroon  Canada  Chad  Chile  China  Colombia  Costa Rica  Croatia  Cuba  Czech Republic  Denmark  Dominican Republic  Ecuador  Egypt  El Salvador  Ethiopia  Finland  France  Georgia  Germany  Ghana  Greece  Guatemala  Guyana  Haiti  Honduras  Hungary  India  Indonesia  Iran  Iraq  Ireland  Israel  Italy  Jamaica  Japan  Jordan  Kazakhstan  Kenya  Kuwait  Kyrgyzstan  Lebanon  Libya  Lithuania  Luxembourg  Madagascar  Malawi  Malaysia  Mali  Mauritania  Mexico  Moldova  Montenegro  Morocco  Myanmar  Namibia  Nepal  Netherlands  Nicaragua  Nigeria  Norway  Oman  Pakistan  Panama  Paraguay  Peru  Philippines  Poland  Portugal  Qatar  Romania  Russia  Saudi Arabia  Senegal  Serbia  Slovakia  Slovenia  Somalia  South Africa  South Korea  Spain  Sudan  Suriname  Sweden  Switzerland  Syria  Trinidad and Tobago  Tunisia  Turkey  Uganda  United Kingdom  Ukraine  United Arab Emirates  United States  Uzbekistan  Venezuela  Yemen  Zambia  Zimbabwe".split("  ")
 
+console.log(countries)
 // Parse the Data
 d3.csv("world_onset_v3.csv", function(data) {
 
@@ -132,7 +134,7 @@ d3.csv("world_onset_v3.csv", function(data) {
 
 d3.select("#selectButton")
   .selectAll('myOptions')
-  .data(data.columns.slice(1, data.length))
+  .data(countries.filter(function(d) {return d != ""}))
   .enter()
   .append('option')
   .text(function (d) { return d; }) // text showed in the menu
@@ -234,6 +236,7 @@ var rects = svg.selectAll("mybar")
            // .text(d.ratio)
            .attr("font-size", "12px")
            .attr("color", "black")  
+           .attr('font-weight', 'bold')
            .attr("font-family", "Helvetica Neue")
            .attr("x", x(d.date))
            .attr("y", y2(d.ratio) - 5)
