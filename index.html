@@ -83,6 +83,7 @@ label {
 <h1>Modeling the Coronavirus</h1>
 <p>The delay may support accusations by President Donald Trump that the Chinese government’s secrecy held back the world’s response to the virus. However, even the public announcement on Jan. 20 left the U.S. nearly two months to prepare for the pandemic.
 During those months, Trump ignored the warnings of his own staff and dismissed the disease as nothing to worry about, while the government failed to bolster medical supplies and deployed flawed testing kits. Leaders across the world turned a blind eye to the outbreak, with British Prime Minister Boris Johnson calling for a strategy of “herd immunity” — before falling ill himself. Brazilian President Jair Bolsonaro sneered at what he called “a little cold.”</p>
+<p>Hover over blah blah.</p>
 <label>Select a country:</label>
 <div class="row align-items-center justify-content-center form-inline wrapper">
   <select id="selectButton" class="form-control" onfocus='this.size=15;' onblur='this.size=1;' onchange='this.size=1; this.blur();'></select>
@@ -119,6 +120,11 @@ var linechart = d3.select("#my_line")
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");   
 
+var legend = svg.append('g')
+  .attr('class', 'legend')
+  .attr('transform', 'translate(0,0)');
+   
+
 // Parse the Data
 d3.csv("world_onset_v3.csv", function(data) {
 
@@ -154,6 +160,16 @@ linechart.append("g")
 
 var country = "Afghanistan"
 
+var lg = legend.selectAll('g')
+  .data(["By date of diagnosis", "By date of onset (est.)"])
+  .enter()
+.append('g')
+  .attr('transform', function(d,i) {return "translate(" + 20 + "," +  (i+1)*20 + ")"});
+
+svg.append("text")
+  .text("Confirmed cases")
+  .attr("x", 20)
+  .attr("y", 10)   
 
 // Add Y axis
 var y = d3.scaleLinear()
@@ -269,6 +285,27 @@ var rects_onset = svg.selectAll("mybar")
    .attr("stroke", "red")
    .attr("stroke-dasharray", "4 2")
 
+  lg.append('rect')
+    .style('fill', function(d) {
+      if (d == "By date of diagnosis") {
+        return "#4285F4";
+      }
+      else {
+        return "#EA4336";
+      }
+    })
+    .attr('x', 0)
+    .attr('y', 0)
+    .attr('width', 10)
+    .attr('height', 10);
+
+  lg.append('text')
+    // .style('font-family', 'Georgia')
+    .style('font-size', '13px')
+    .attr('x', 17.5)
+    .attr('y', 10)
+    .text(function(d) {return d});   
+
     // A function that update the chart
   function update(selectedGroup) {
     baseValue = +data[0][selectedGroup + "_onset"];
@@ -285,6 +322,8 @@ var rects_onset = svg.selectAll("mybar")
           // .ease('linear')
           .call(d3.axisLeft(y))
 
+    // tip.remove();  
+    country = selectedGroup;
     rects
       .transition()
       .duration(1000)
