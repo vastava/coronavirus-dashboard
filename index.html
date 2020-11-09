@@ -252,6 +252,12 @@ var rects_onset = svg.selectAll("mybar")
 
     // A function that update the chart
   function update(selectedGroup) {
+    baseValue = +data[0][selectedGroup + "_onset"];
+
+    data.forEach(function(d) {
+      d.ratio = d[selectedGroup + "_onset"] / baseValue;
+      baseValue = d[selectedGroup + "_onset"];
+    }); 
 
     y.domain([0, d3.max(data, function(d) {return +d[selectedGroup]})])    
 
@@ -265,19 +271,55 @@ var rects_onset = svg.selectAll("mybar")
       .duration(1000)
       .attr("y", function(d) { return y(d[selectedGroup]); })
       .attr("height", function(d) { return height - y(d[selectedGroup]); })
+      
+    rects
+      .on('mouseover', function(d) {
+        tip.show(d, this)
+        d3.select(this).attr('fill', 'lightgray')
+        svg.append("line")
+           .attr('class', 'focus')
+           .attr("x1", x(d.date))
+           .attr("x2", x(d.date))
+           .attr("y1", y(d[selectedGroup]) - 50)
+           .attr("y2", height*10)
+           .attr("stroke", "darkgray")
+           .attr("stroke-dasharray", "4 5")
+        linechart.append("line")
+           .attr('class', 'focus')
+           .attr("x1", x(d.date))
+           .attr("x2", x(d.date))
+           .attr("y1", 0)
+           .attr("y2", height)
+           .attr("stroke", "darkgray")
+           .attr("stroke-dasharray", "4 5")
+        if (d3.timeParse("%m/%e/%y")(d.date) < d3.timeParse("%m/%e/%y")("10/25/20")) {
+          linechart.append("text")
+             .attr("class", "focus")
+             .text(d3.timeParse("%m/%e/%y")(d.date) < d3.timeParse("%m/%e/%y")("10/10/20") ? "Rate of change: " + d.ratio.toLocaleString() : d.ratio.toLocaleString())
+             // .text(d.ratio)
+             .attr("font-size", "12px")
+             .attr("color", "black")
+             .attr("font-weight", "bold")  
+             .attr("stroke", "white")
+             .attr('stroke-width', 0.1)
+             .attr("font-family", "Helvetica Neue")
+             .attr("x", x(d.date))
+             .attr("y", y2(d.ratio) - 5)
+        }                      
+
+      })
+      .on('mouseout', function(d) {
+        tip.hide(d, this)
+        d3.select(this).attr('fill', "#4285F4")
+        d3.selectAll(".focus").remove();
+      })
 
     rects_onset
       .transition()
       .duration(1000)
       .attr("y", function(d) { return y(d[selectedGroup + "_onset"]); })
       .attr("height", function(d) { return height - y(d[selectedGroup + "_onset"]); })  
-
-    baseValue = +data[0][selectedGroup + "_onset"];
-
-    data.forEach(function(d) {
-      d.ratio = d[selectedGroup + "_onset"] / baseValue;
-      baseValue = d[selectedGroup + "_onset"];
-    });           
+          
     // Create new data with the selection?
 
     // var dataFilter = data.map(function(d){return {time: d.time, value:d[selectedGroup]} })
@@ -298,7 +340,7 @@ var rects_onset = svg.selectAll("mybar")
       .attr("y2", y2(1))    
 
     line
-        .datum(data.filter(function(k){return !isNaN(+k.ratio) & (k.ratio < 100);}))
+        .datum(data.filter(function(k){return !isNaN(+k.ratio) & (k.ratio < 100)  & (k[selectedGroup + "_onset"] > 5) & (d3.timeParse("%m/%e/%y")(k.date) < d3.timeParse("%m/%e/%y")("10/25/20"));}))
         .transition()
         .duration(1000)
         .attr("d", d3.line()
