@@ -5,40 +5,39 @@
 <script src="https://d3js.org/d3.v4.js"></script>
 <!-- <script src="http://d3js.org/d3.v3.min.js"></script> -->
 <script src="d3-tip.js"></script>
-
-<!-- <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script> -->
-
-<!-- Create a div where the graph will take place -->
-<select id="selectButton"></select>
-<div id="my_dataviz"></div>
-<div id="my_line"></div>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <style>
-/*.d3-tip {
-  line-height: 1;
-  font-weight: 600;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  border-radius: 2px;
+section {
+      margin: 0 auto 1rem auto;
 }
 
-.d3-tip:after {
-  box-sizing: border-box;
-  display: inline;
-  font-size: 10px;
-  width: 100%;
-  line-height: 1;
-  color: rgba(0, 0, 0, 0.8);
-  content: "\25BC";
+.text {
+  width: 65%;
+}
+
+select.form-control{
+  display:inline-block
+  width: 200px;}
+
+label {
+  margin-right: 10px;
+  /*position: fixed;*/
+}
+
+.inline { 
+  display: inline-block; 
+  width: 200px;
+  /*border: 1px solid red; */
+  /*margin:10px;*/
+}
+.wrapper{
+/*  width:200px;
+  padding:20px;*/
   position: absolute;
-  text-align: center;
+  white-space: nowrap;
+  margin: auto;
+  /*height: 500px;*/
 }
-
-.d3-tip.n:after {
-  margin: -1px 0 0 0;
-  top: 100%;
-  left: 0;
-}*/
 
 .d3-tip {
   line-height: 1.4;
@@ -75,13 +74,33 @@
 }
 
 </style>
+
+<!-- <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script> -->
+
+<!-- Create a div where the graph will take place -->
+
+<section class="text">
+<h1>Modeling the Coronavirus</h1>
+<p>The delay may support accusations by President Donald Trump that the Chinese government’s secrecy held back the world’s response to the virus. However, even the public announcement on Jan. 20 left the U.S. nearly two months to prepare for the pandemic.
+During those months, Trump ignored the warnings of his own staff and dismissed the disease as nothing to worry about, while the government failed to bolster medical supplies and deployed flawed testing kits. Leaders across the world turned a blind eye to the outbreak, with British Prime Minister Boris Johnson calling for a strategy of “herd immunity” — before falling ill himself. Brazilian President Jair Bolsonaro sneered at what he called “a little cold.”</p>
+<label>Select a country:</label>
+<div class="row align-items-center justify-content-center form-inline wrapper">
+  <select id="selectButton" class="form-control" onfocus='this.size=15;' onblur='this.size=1;' onchange='this.size=1; this.blur();'></select>
+</div>
+</section>
+
+<br>
+<br>
+<div id="my_dataviz"></div>
+<div id="my_line"></div>
+
 <script>
 
 
 // set the dimensions and margins of the graph
 var margin = {top: 5, right: 30, bottom: 60, left: 90},
     width = 990 - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom;
+    height = 300 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
 var svg = d3.select("#my_dataviz")
@@ -133,7 +152,7 @@ linechart.append("g")
 
 // console.log(d3.max(data, function(d) {return d.}))    
 
-var country = "Italy"
+var country = "Afghanistan"
 
 
 // Add Y axis
