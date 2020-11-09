@@ -133,7 +133,7 @@ linechart.append("g")
 
 // console.log(d3.max(data, function(d) {return d.}))    
 
-var country = "Russia"
+var country = "Italy"
 
 
 // Add Y axis
@@ -150,7 +150,7 @@ var tip = d3.tip()
  .html(function(d) {
   // console.log(d);
    return "<div>" +
-           "<span style='color:black; font-weight:600'>" + d3.timeFormat("%b. %e, %Y")(d3.timeParse("%m/%e/%y")(d.date)) + "</span><br/>" +
+           "<span style='color:black; font-weight:600'>" + d3.timeFormat("%B %e, %Y")(d3.timeParse("%m/%e/%y")(d.date)) + "</span><br/>" +
            "<span style='color:black'> Confirmed cases by diagnosis (reported): </span><span style='color: #4285F4'>" + d3.format(",")(d[country]) + "</span><br/>" +
            "<span style='color:black'>Confirmed cases by date of onset (estimated): </span><span style='color: #EA4336'>" + d3.format(",")(d[country+"_onset"]) + "</span><br/>"
            "</div>"
@@ -192,16 +192,17 @@ var rects = svg.selectAll("mybar")
          .attr("y2", height)
          .attr("stroke", "darkgray")
          .attr("stroke-dasharray", "4 5")
-      
-      linechart.append("text")
-         .attr("class", "focus")
-         .text("Rate of change: " + d.ratio.toLocaleString())
-         // .text(d.ratio)
-         .attr("font-size", "12px")
-         .attr("color", "black")  
-         .attr("font-family", "Helvetica Neue")
-         .attr("x", x(d.date))
-         .attr("y", y2(d.ratio) - 5)       
+      if (d3.timeParse("%m/%e/%y")(d.date) < d3.timeParse("%m/%e/%y")("10/25/20")) {
+        linechart.append("text")
+           .attr("class", "focus")
+           .text(d3.timeParse("%m/%e/%y")(d.date) < d3.timeParse("%m/%e/%y")("10/10/20") ? "Rate of change: " + d.ratio.toLocaleString() : d.ratio.toLocaleString())
+           // .text(d.ratio)
+           .attr("font-size", "12px")
+           .attr("color", "black")  
+           .attr("font-family", "Helvetica Neue")
+           .attr("x", x(d.date))
+           .attr("y", y2(d.ratio) - 5)
+      }                      
 
     })
     .on('mouseout', function(d) {
