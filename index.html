@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+<!-- <script src="http://d3js.org/d3.v3.min.js"></script> -->
+<script src="d3-tip.js"></script>
+
+<!-- <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script> -->
+
+<!-- Create a div where the graph will take place -->
+<select id="selectButton"></select>
+<div id="my_dataviz"></div>
+<div id="my_line"></div>
+<style>
+/*.d3-tip {
+  line-height: 1;
+  font-weight: 600;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}*/
+
+.d3-tip {
+  line-height: 1.4;
+  padding: 12px;
+  background: white;
+  color: black;
+  border-radius:  2px;
+  border: 2px;
+  border-color: black;
+  font-size: 12px;
+  font-family: Helvetica Neue;
+  width: 200px;
+  box-shadow: 3px 3px 1px lightgrey;
+
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  width: 100%;
+  line-height: 1;
+  color: rgba(200, 200, 200, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+
+</style>
+<script>
+
+
+// set the dimensions and margins of the graph
+var margin = {top: 5, right: 30, bottom: 60, left: 90},
+    width = 990 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
+
+// append the svg object to the body of the page
+var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+var linechart = d3.select("#my_line")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");   
+
+// Parse the Data
+d3.csv("world_onset_v3.csv", function(data) {
+
+// console.log(data.columns.slice(1, 127))
+
+d3.select("#selectButton")
+  .selectAll('myOptions')
+  .data(data.columns.slice(1, data.length))
+  .enter()
+  .append('option')
+  .text(function (d) { return d; }) // text showed in the menu
+  .attr("value", function (d) { return d; }) // corresponding value returned by the button
+// X axis
+var x = d3.scaleBand()
+  .range([ 0, width ])
+  .domain(data.map(function(d) { return d.date; }))
+  .padding(0.2);
+svg.append("g")
+  .attr("transform", "translate(0," + height + ")")
+  .call(d3.axisBottom(x).tickValues(x.domain().filter(function(d,i){ return !(i%8)})))
+  .selectAll("text")
+    .attr("transform", "translate(-10,0)rotate(-45)")
+    .style("text-anchor", "end");
+
+linechart.append("g")
+  .attr("transform", "translate(0," + height  + ")")
+  .call(d3.axisBottom(x).tickValues(x.domain().filter(function(d,i){ return !(i%8)})))
+  .selectAll("text")
+    .attr("transform", "translate(-10,0)rotate(-45)")
+    .style("text-anchor", "end");    
+
+// console.log(d3.max(data, function(d) {return d.}))    
+
+var country = "Russia"
+
+
+// Add Y axis
+var y = d3.scaleLinear()
+  .domain([0, d3.max(data, function(d) {return +d[country]})])
+  .range([ height, 0]);
+
+var axis_y = svg.append("g")
+  .call(d3.axisLeft(y));
+// d3.timeFormat("%b. %e, %Y")
+var tip = d3.tip()
+ .attr('class', 'd3-tip')
+ .offset(d => [-50, 0])
+ .html(function(d) {
+  // console.log(d);
+   return "<div>" +
+           "<span style='color:black; font-weight:600'>" + d3.timeFormat("%b. %e, %Y")(d3.timeParse("%m/%e/%y")(d.date)) + "</span><br/>" +
+           "<span style='color:black'> Confirmed cases by diagnosis (reported): </span><span style='color: #4285F4'>" + d3.format(",")(d[country]) + "</span><br/>" +
+           "<span style='color:black'>Confirmed cases by date of onset (estimated): </span><span style='color: #EA4336'>" + d3.format(",")(d[country+"_onset"]) + "</span><br/>"
+           "</div>"
+ })
+svg.call(tip)  
+
+var baseValue = +data[0][country + "_onset"];
+
+data.forEach(function(d) {
+  d.ratio = d[country + "_onset"] / baseValue;
+  baseValue = d[country + "_onset"];
+});  
+// Bars
+var rects = svg.selectAll("mybar")
+  .data(data)
+  .enter()
+  .append("rect")
+    .attr("x", function(d) { return x(d.date); })
+    .attr("y", function(d) { return y(d[country]); })
+    .attr("width", x.bandwidth()/2)
+    .attr("height", function(d) { return height - y(d[country]); })
+    .attr("fill", "#4285F4")
+    .on('mouseover', function(d) {
+      tip.show(d, this)
+      d3.select(this).attr('fill', 'lightgray')
+      svg.append("line")
+         .attr('class', 'focus')
+         .attr("x1", x(d.date))
+         .attr("x2", x(d.date))
+         .attr("y1", y(d[country]) - 50)
+         .attr("y2", height*10)
+         .attr("stroke", "darkgray")
+         .attr("stroke-dasharray", "4 5")
+      linechart.append("line")
+         .attr('class', 'focus')
+         .attr("x1", x(d.date))
+         .attr("x2", x(d.date))
+         .attr("y1", 0)
+         .attr("y2", height)
+         .attr("stroke", "darkgray")
+         .attr("stroke-dasharray", "4 5")
+      
+      linechart.append("text")
+         .attr("class", "focus")
+         .text("Rate of change: " + d.ratio.toLocaleString())
+         // .text(d.ratio)
+         .attr("font-size", "12px")
+         .attr("color", "black")  
+         .attr("font-family", "Helvetica Neue")
+         .attr("x", x(d.date))
+         .attr("y", y2(d.ratio) - 5)       
+
+    })
+    .on('mouseout', function(d) {
+      tip.hide(d, this)
+      d3.select(this).attr('fill', "#4285F4")
+      d3.selectAll(".focus").remove();
+    })
+    // .attr("fill", "#69b3a2")
+
+var rects_onset = svg.selectAll("mybar")
+  .data(data)
+  .enter()
+  .append("rect")
+    .attr("x", function(d) { return x(d.date) - x.bandwidth()/2; })
+    .attr("y", function(d) { return y(d[country + "_onset"]); })
+    .attr("width", x.bandwidth()/2)
+    .attr("height", function(d) { return height - y(d[country + "_onset"]); })
+    .attr("fill", "#EA4336")    
+
+  
+
+  var y2 = d3.scaleLinear()
+    .domain(d3.extent(data.filter(function(k){return !isNaN(+k.ratio) & (k.ratio < 100);}), function(d) {return d.ratio}))
+    .range([ height, 0 ]);
+  var axis_y2 = linechart.append("g")
+    .call(d3.axisLeft(y2));
+
+  // Add the line
+  var line = linechart.append("path")
+    .datum(data.filter(function(k){return !isNaN(+k.ratio) & (k.ratio < 100)  & (k[country + "_onset"] > 5) & (d3.timeParse("%m/%e/%y")(k.date) < d3.timeParse("%m/%e/%y")("10/25/20"));}))
+    .attr("fill", "none")
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 1.5)
+    .attr("d", d3.line()
+      .x(function(d) { return x(d.date) })
+      .y(function(d) { return y2(d.ratio) })
+      .curve(d3.curveMonotoneX)
+      )  
+
+  var dash = linechart.append("line")
+   .attr("x1", x('1/2/20'))
+   .attr("x2", width)
+   .attr("y1", y2(1))
+   .attr("y2", y2(1))
+   .attr("stroke", "red")
+   .attr("stroke-dasharray", "4 2")
+
+    // A function that update the chart
+  function update(selectedGroup) {
+
+    y.domain([0, d3.max(data, function(d) {return +d[selectedGroup]})])    
+
+    axis_y.transition()
+          .duration(500)
+          // .ease('linear')
+          .call(d3.axisLeft(y))
+
+    rects
+      .transition()
+      .duration(1000)
+      .attr("y", function(d) { return y(d[selectedGroup]); })
+      .attr("height", function(d) { return height - y(d[selectedGroup]); })
+
+    rects_onset
+      .transition()
+      .duration(1000)
+      .attr("y", function(d) { return y(d[selectedGroup + "_onset"]); })
+      .attr("height", function(d) { return height - y(d[selectedGroup + "_onset"]); })  
+
+    baseValue = +data[0][selectedGroup + "_onset"];
+
+    data.forEach(function(d) {
+      d.ratio = d[selectedGroup + "_onset"] / baseValue;
+      baseValue = d[selectedGroup + "_onset"];
+    });           
+    // Create new data with the selection?
+
+    // var dataFilter = data.map(function(d){return {time: d.time, value:d[selectedGroup]} })
+
+    // Give these new data to update line
+
+    //     .datum(dataFilter)
+    y2.domain(d3.extent(data.filter(function(k){return !isNaN(+k.ratio) & (k.ratio < 100);}), function(d) {return d.ratio}))
+
+    axis_y2.transition()
+          .duration(500)
+          // .ease('linear')
+          .call(d3.axisLeft(y2))
+    dash   
+      .transition()
+      .duration(500)
+      .attr("y1", y2(1))
+      .attr("y2", y2(1))    
+
+    line
+        .datum(data.filter(function(k){return !isNaN(+k.ratio) & (k.ratio < 100);}))
+        .transition()
+        .duration(1000)
+        .attr("d", d3.line()
+          .x(function(d) { return x(d.date) })
+          .y(function(d) { return y2(d.ratio) })
+          .curve(d3.curveMonotoneX)
+          ) 
+
+        
+    //     .attr("d", d3.line()
+    //       .x(function(d) { return x(+d.time) })
+    //       .y(function(d) { return y(+d.value) })
+    //     )
+    //     .attr("stroke", function(d){ return myColor(selectedGroup) })
+  }
+
+  d3.select("#selectButton").on("change", function(d) {
+      // recover the option that has been chosen
+      var selectedOption = d3.select(this).property("value")
+      // run the updateChart function with this selected option
+      update(selectedOption)
+  })     
+
+})
+
+</script>
