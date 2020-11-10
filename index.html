@@ -82,6 +82,16 @@ svg {
   display: block;
 }
 
+.about {
+  /*width: 800px;*/
+  margin: auto;
+  background: #efefef;
+  border-radius: 0.2rem;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  font-family: Arial;
+}
+
 </style>
 
 <!-- <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script> -->
@@ -121,17 +131,29 @@ svg {
   <select id="selectButton" class="form-control" onfocus='this.size=15;' onblur='this.size=1;' onchange='this.size=1; this.blur();'></select>
 </div>
 </section>
-
 <br>
 <br>
 <div id="my_dataviz"></div>
 <div id="my_line"></div>
-
-<section class="text">
-<p>Check out the code for this project.</p>
+<br>
+<section class="text about">
+  <h4>About the project</h4>
+<p>This project involved scraping data from worldometers using BeautifulSoup, building the "spread and fit" model using numpy and developing the interactive dashboard in d3. It is the first part in a broader analysis I am doing of the coronavirus response in countries around the world. Check out the <a href="https://github.com/vastava/coronavirus-dashboard">code on Github</a>.</p>
+<a href="https://twitter.com/vastava_?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @vastava_</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </section>
-<script>
+<br>
 
+<!-- <div class='about'>
+          <h4><b>ABOUT THIS PROJECT</b></h4>
+          <p>The allergy season lengths were calculated using daily temperature data from <a href="https://www.ncdc.noaa.gov/cdo-web/webservices/v2">NOAA's API</a>. The asthma prevalence data is from <a href="https://www.cdc.gov/asthma/Asthma_Prevalence_in_US.pptx">CDC</a>. The practicing allergist data is from <a href="https://data.cms.gov/use-agreement?id=fs4p-t5eq&name=Medicare%20Provider%20Utilization%20and%20Payment%20Data:%20Physician%20and%20Other%20Supplier%20PUF%20CY2017">Medicare Provider Utilization Data</a> and the air pollution data is from the <a href="https://www.caces.us/data">Center for Air, Climate, and Energy Solutions</a>.
+            </p>
+          <p>This project is open-source on <a href="https://github.com/vastava/allergies">Github</a>.</p><br>
+          
+      </div>
+
+<script> -->
+<script>
 
 // set the dimensions and margins of the graph
 var margin = {top: 5, right: 30, bottom: 60, left: 90},
