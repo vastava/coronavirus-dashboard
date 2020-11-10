@@ -90,9 +90,31 @@ svg {
 
 <section class="text">
 <h1>Modeling the Coronavirus</h1>
+<h4><i>Estimating the date of exposure to the virus given the date of diagnosis</i></h4>
 <p>By now, you’ve probably read Tomas Pueyo’s <a href='https://tomaspueyo.medium.com/coronavirus-act-today-or-people-will-die-f4d3d9cd99ca'>articles</a> on the coronavirus. Remember this graph?</p>
 <img src="img/hubei.png" alt="Graph of cases in Hubei, China">
-<p>During those months, Trump ignored the warnings of his own staff and dismissed the disease as nothing to worry about, while the government failed to bolster medical supplies and deployed flawed testing kits. Leaders across the world turned a blind eye to the outbreak, with British Prime Minister Boris Johnson calling for a strategy of “herd immunity” — before falling ill himself. Brazilian President Jair Bolsonaro sneered at what he called “a little cold.”</p>
+<p>The above graph shows the number of confirmed COVID-19 cases in the province of Hubei, China, but it <i>also</i> shows the estimated date that each of these cases first contracted the virus. The graph clearly communicates why it was important for Hubei to lockdown on Jan. 23 — though there were less than a thousand confirmed cases at the time, the turquoise curve shows that the true number of cases was much higher. 
+</p>
+<p>The Chinese CDC collected this data by asking patients during their diagnosis when their symptoms started. Unfortunately, other countries have not followed this example and this two-sided dataset is not widely available.</p>
+
+<p>So I tried to model the data for other countries, based on what is known about Hubei and the virus.</p>
+
+<p>The CDC says that symptoms may appear 2 to 14 days after exposure to COVID-19. I’m going to assume that the number of days for symptoms to appear follows a normal distribution with mean 8. </p>
+
+<p>If we assume that 2 to 14 days covers 95% of cases, then following the 68-95-99.7 rule, the range covers two standard deviations away from the mean. The assumed distribution, then, is normal with mean 8 and standard deviation 3.</p>
+<img src="img/normal-drawing.png" alt="Normal distribution curve">
+<p>The above curve is my estimation for the distribution of the number of days between exposure to COVID-19 and exhibiting symptoms. 95% of cases exhibit symptoms between 2 and 14 days after exposure, just like the CDC said.</p>
+<p> The data we're trying to model, however, is based off of the testing date — I assume it takes 2 days on average to get tested and receive results after noticing symptoms. This means that the normal distribution I will be using for the model has mean 10 and standard deviation 3. So the range is now between 4 and 16 days and represents the number of days between exposure to the virus and a positive test result.</p>
+<p>So here's my theory: if we take each of the orange bars in the original graph and convert them into a normal curve using this distribution, we can then layer each of these normal curves ontop of one another to estimate the turquoise curve. </p>
+<p>Here's a poorly done illustration trying to explain this process:</p>
+<img src="img/hubei-annotated.png" alt="Normal distribution curves overlaid on Hubei chart">
+<p>Applying that data to the Hubei case data from the original chart results in the following curves:</p>
+<img src="img/estimation.png" alt="Estimation of cases by date of onset in Hubei">
+<p>And let's just overlay that on the original chart...</p>
+<img src="img/overlay.png" alt="Estimation overlaid onto original chart">
+<p>Well damn. I'd say that's a pretty good match.</p>
+<p>I then scraped the COVID-19 case data from <a href='https://www.worldometers.info/coronavirus/'>worldometers</a> for all countries with more than 1,000 deaths, and used the same estimation methodology to determine the "date of onset" curves for each of these countries. Interact with the dashboard below!</p>
+<h3>Interactive dashboard</h3>
 <p><i>Hover over the blue bars for more details.</i></p>
 <label>Select a country:</label>
 <div class="row align-items-center justify-content-center form-inline wrapper">
@@ -105,6 +127,9 @@ svg {
 <div id="my_dataviz"></div>
 <div id="my_line"></div>
 
+<section class="text">
+<p>Check out the code for this project.</p>
+</section>
 <script>
 
 
