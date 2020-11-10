@@ -23,7 +23,11 @@ label {
   margin-right: 10px;
   /*position: fixed;*/
 }
-
+img {
+  width: 70%;
+  margin: 0px auto;
+  display: block;
+}
 .inline { 
   display: inline-block; 
   width: 200px;
@@ -73,6 +77,11 @@ label {
   left: 0;
 }
 
+svg {
+  margin: 0px auto;
+  display: block;
+}
+
 </style>
 
 <!-- <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script> -->
@@ -81,8 +90,9 @@ label {
 
 <section class="text">
 <h1>Modeling the Coronavirus</h1>
-<p>The delay may support accusations by President Donald Trump that the Chinese government’s secrecy held back the world’s response to the virus. However, even the public announcement on Jan. 20 left the U.S. nearly two months to prepare for the pandemic.
-During those months, Trump ignored the warnings of his own staff and dismissed the disease as nothing to worry about, while the government failed to bolster medical supplies and deployed flawed testing kits. Leaders across the world turned a blind eye to the outbreak, with British Prime Minister Boris Johnson calling for a strategy of “herd immunity” — before falling ill himself. Brazilian President Jair Bolsonaro sneered at what he called “a little cold.”</p>
+<p>By now, you’ve probably read Tomas Pueyo’s <a href='https://tomaspueyo.medium.com/coronavirus-act-today-or-people-will-die-f4d3d9cd99ca'>articles</a> on the coronavirus. Remember this graph?</p>
+<img src="img/hubei.png" alt="Graph of cases in Hubei, China">
+<p>During those months, Trump ignored the warnings of his own staff and dismissed the disease as nothing to worry about, while the government failed to bolster medical supplies and deployed flawed testing kits. Leaders across the world turned a blind eye to the outbreak, with British Prime Minister Boris Johnson calling for a strategy of “herd immunity” — before falling ill himself. Brazilian President Jair Bolsonaro sneered at what he called “a little cold.”</p>
 <p><i>Hover over the blue bars for more details.</i></p>
 <label>Select a country:</label>
 <div class="row align-items-center justify-content-center form-inline wrapper">
